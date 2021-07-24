@@ -16,10 +16,19 @@ export default class CreateExercise extends Component {
 	}
 
 	componentDidMount() {
-		this.setState({
-			username: 'test user',
-			users: ['test user'],
-		});
+		axios
+			.get('http://localhost:5000/users/')
+			.then((response) => {
+				if (response.data.length > 0) {
+					this.setState({
+						users: response.data.map(
+							(user) => user.username
+						),
+						username: response.data[0].username,
+					});
+				}
+			})
+			.catch((err) => console.log(err));
 	}
 
 	onUsernameChange = (event) => {
@@ -54,6 +63,14 @@ export default class CreateExercise extends Component {
 		};
 
 		console.log(exercise);
+		axios
+			.post(
+				'http://localhost:5000/exercises/add',
+				exercise
+			)
+			.then((response) =>
+				console.log(response.data)
+			);
 		// window.location = '/';
 	};
 
@@ -65,7 +82,7 @@ export default class CreateExercise extends Component {
 					<div className='form-group'>
 						<label>Username: </label>
 						<select
-							// ref='userInput'
+							useref='userInput'
 							required
 							className='form-control'
 							value={this.state.username}
